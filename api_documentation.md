@@ -25,7 +25,7 @@ Gera um relatório CSV para a plataforma especificada.
 
 **Parâmetros:**
 
-- `platform`: Nome da plataforma (ex: "meta_ads", "ga4",).
+- `platform`: Nome da plataforma (ex: "meta_ads", "ga4", "tiktok_insights").
 
 **Resposta Exemplo:**
 - Um arquivo CSV será retornado contendo os dados de todas as contas e insights para a plataforma especificada.
@@ -36,7 +36,7 @@ Gera um resumo CSV para a plataforma especificada.
 
 **Parâmetros:**
 
-- `platform`: Nome da plataforma (ex: "meta_ads", "ga4").
+- `platform`: Nome da plataforma (ex: "meta_ads", "ga4", "tiktok_insights").
 
 **Resposta Exemplo:**
 - Um arquivo CSV será retornado com um resumo dos dados de todas as contas na plataforma especificada.

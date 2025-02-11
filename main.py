@@ -19,7 +19,7 @@ def fetch_data(endpoint, params=None):
 
 def generate_csv_response(data, field_names):
     """Gera um CSV como resposta HTTP."""
-    field_names = ["Platform", "Account Name", "Ad Name"] + list(field_names)
+    field_names = ["Platform", "Account Name",] + list(field_names)
     response = Response(content_type="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=report.csv"
     writer = csv.DictWriter(response.stream, fieldnames=field_names)
@@ -44,6 +44,16 @@ def platform_report(platform):
     # Recupera dados da plataforma e conta
     accounts = fetch_data(f"/api/accounts?platform={platform}")
     fields = fetch_data(f"/api/fields?platform={platform}")
+
+    platform_name = None
+    
+    if platform == 'meta_ads':
+        platform_name = 'Facebook'
+    elif platform == 'ga4':
+        platform_name = 'Google Analytics'
+    elif platform == 'tiktok_insights':
+        platform_name = 'TikTok'
+
     
     if not accounts or 'accounts' not in accounts:
         return "Nenhuma conta encontrada para a plataforma", 404
@@ -76,8 +86,9 @@ def platform_report(platform):
         
         # Para cada anúncio, extraímos os dados de insights
         for ad in insights['insights']:
+            
             if isinstance(ad, dict):
-                row = {"Platform": platform, "Ad Name": ad.get('ad_name', 'Unknown'), "Account Name": account_name}
+                row = {"Platform": platform_name, "Account Name": account_name}
                 # Preenche as colunas com os campos de insights
                 for field in field_names:
                     row[field] = ad.get(field, "")  # Valor vazio se o campo não existir
@@ -97,12 +108,21 @@ def platform_summary(platform):
     accounts = fetch_data(f"/api/accounts?platform={platform}")
     fields = fetch_data(f"/api/fields?platform={platform}")
     
+    platform_name = None
+    
+    if platform == 'meta_ads':
+        platform_name = 'Facebook'
+    elif platform == 'ga4':
+        platform_name = 'Google Analytics'
+    elif platform == 'tiktok_insights':
+        platform_name = 'TikTok'
+
     if not accounts or 'accounts' not in accounts:
         return "Nenhuma conta encontrada para a plataforma", 404
     if not fields or 'fields' not in fields:
         return "Nenhum campo encontrado para a plataforma", 404
 
-    field_names = ["Platform", "Account Name"] + [field['value'] for field in fields['fields']]
+    field_names = [] + [field['value'] for field in fields['fields']]
     summary = {}
 
     for account in accounts['accounts']:
@@ -125,7 +145,7 @@ def platform_summary(platform):
         
         # Inicializa a conta no resumo, se ainda não estiver lá
         if account_id not in summary:
-            summary[account_id] = {"Platform": platform, "Account Name": account_name}
+            summary[account_id] = {"Platform": platform_name, "Account Name": account_name}
         
         # Para cada anúncio, soma os valores de campos numéricos
         for ad in insights['insights']:
@@ -185,14 +205,14 @@ def general_report():
                         else:
                             row[field] = ""  # Deixa vazio se o campo não existir para este anúncio
                     
-                    # Calculando "Cost per Click" se a plataforma não oferecer esse campo
-                    if "Cost per Click" not in row and "spend" in row and "clicks" in row:
+                    # Calculando "Cost per Click estimated" se a plataforma não oferecer esse campo
+                    if "Cost per Click estimated estimated" not in row and "spend" in row and "clicks" in row:
                         try:
-                            row["Cost per Click"] = row["spend"] / row["clicks"] if row["clicks"] != 0 else 0
-                            field_names.add("Cost per Click")  # Adiciona "Cost per Click" ao field_names
+                            row["Cost per Click estimated estimated"] = row["spend"] / row["clicks"] if row["clicks"] != 0 else 0
+                            field_names.add("Cost per Click estimated estimated")  # Adiciona "Cost per Click estimated" ao field_names
                         except ZeroDivisionError:
-                            row["Cost per Click"] = 0
-                            field_names.add("Cost per Click")  # Adiciona "Cost per Click" ao field_names
+                            row["Cost per Click estimated estimated"] = 0
+                            field_names.add("Cost per Click estimated estimated")  # Adiciona "Cost per Click estimated" ao field_names
                     
                     all_rows.append(row)
 
@@ -242,12 +262,12 @@ def general_summary():
                         else:
                             summary[platform_id][field] = value
 
-        # Calculando "Cost per Click" se a plataforma não tiver esse campo
-        if "Cost per Click" not in summary[platform_id] and "spend" in summary[platform_id] and "clicks" in summary[platform_id]:
+        # Calculando "Cost per Click estimated" se a plataforma não tiver esse campo
+        if "Cost per Click estimated" not in summary[platform_id] and "spend" in summary[platform_id] and "clicks" in summary[platform_id]:
             clicks = summary[platform_id]["clicks"]
             spend = summary[platform_id]["spend"]
-            summary[platform_id]["Cost per Click"] = spend / clicks if clicks != 0 else 0
-            field_names.add("Cost per Click")
+            summary[platform_id]["Cost per Click estimated"] = spend / clicks if clicks != 0 else 0
+            field_names.add("Cost per Click estimated")
 
     for row in summary.values():
         row.pop("id", None)
