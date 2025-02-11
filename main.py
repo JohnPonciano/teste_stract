@@ -276,6 +276,7 @@ def general_summary():
     for row in summary.values():
         for field in field_names:
             row.setdefault(field, "")
+            
 
     return generate_csv_response(list(summary.values()), list(field_names))
 

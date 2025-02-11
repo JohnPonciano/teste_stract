@@ -76,11 +76,15 @@ Gera um resumo CSV geral, incluindo dados de todas as plataformas.
    ```bash
    pip install -r requirements.txt
    ```
+   or
+   ```bash
+   pip install -r Flask, requests
+   ```
 
 2. Execute o servidor Flask:
 
    ```bash
-   python app.py
+   python main.py
    ```
 
 3. A API estará disponível em `http://127.0.0.1:5000`.
